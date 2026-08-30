@@ -1,0 +1,261 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ------------------------------------------------------------------ *
+ *  Fitness Coach — "the training log"
+ *  A coaching notebook: warm paper, ink, hairline rules, a forest
+ *  accent pen-mark down every coach entry, a mono margin index.
+ * ------------------------------------------------------------------ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-rule: var(--rule);
+  --color-wash: var(--wash);
+  --color-flag: var(--flag);
+
+  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
+
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 10px;
+}
+
+:root {
+  --paper: #fbfaf7;
+  --ink: #1b1a17;
+  --ink-soft: #5b564c;
+  --rule: #e6e1d5;
+  --wash: #edf1e9;
+  --flag: #a23b2e;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #ffffff;
+  --card-foreground: var(--ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink);
+  --primary: #2f5233;
+  --primary-foreground: #f7f5ef;
+  --secondary: #f1efe8;
+  --secondary-foreground: var(--ink);
+  --muted: #f1efe8;
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--wash);
+  --accent-foreground: #223b25;
+  --destructive: var(--flag);
+  --destructive-foreground: #f7f5ef;
+  --border: var(--rule);
+  --input: var(--rule);
+  --ring: #2f5233;
+
+  --radius: 4px;
+}
+
+.dark {
+  --paper: #17150f;
+  --ink: #ece7da;
+  --ink-soft: #9c9686;
+  --rule: #2e2a20;
+  --wash: #20241c;
+  --flag: #d9968a;
+
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: #1f1c15;
+  --card-foreground: var(--ink);
+  --popover: #1f1c15;
+  --popover-foreground: var(--ink);
+  --primary: #8fb191;
+  --primary-foreground: #14170f;
+  --secondary: #23201a;
+  --secondary-foreground: var(--ink);
+  --muted: #23201a;
+  --muted-foreground: var(--ink-soft);
+  --accent: var(--wash);
+  --accent-foreground: #cdd8c9;
+  --destructive: var(--flag);
+  --destructive-foreground: #17150f;
+  --border: var(--rule);
+  --input: #35301f;
+  --ring: #8fb191;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "kern", "liga";
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+}
+
+/* Coach reply prose — rendered markdown, kept on-brand ------------- */
+.prose-log {
+  font-family: var(--font-serif);
+  font-size: 1.045rem;
+  line-height: 1.62;
+  color: var(--ink);
+}
+.prose-log > * + * {
+  margin-top: 0.85em;
+}
+.prose-log h1,
+.prose-log h2,
+.prose-log h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 1.5em;
+}
+.prose-log strong {
+  font-weight: 600;
+}
+.prose-log em {
+  font-style: italic;
+}
+.prose-log a {
+  color: var(--primary);
+  text-underline-offset: 2px;
+}
+.prose-log ul,
+.prose-log ol {
+  padding-left: 1.15rem;
+}
+.prose-log li {
+  margin-top: 0.3em;
+}
+.prose-log ul > li {
+  list-style: none;
+  position: relative;
+}
+.prose-log ul > li::before {
+  content: "–";
+  position: absolute;
+  left: -1.1rem;
+  color: var(--primary);
+}
+.prose-log ol {
+  list-style: decimal;
+}
+.prose-log ol > li::marker {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--ink-soft);
+}
+.prose-log code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--secondary);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+.prose-log pre {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  background: var(--secondary);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+}
+.prose-log pre code {
+  background: none;
+  padding: 0;
+}
+.prose-log blockquote {
+  border-left: 2px solid var(--primary);
+  padding-left: 0.9rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.prose-log table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  display: block;
+  overflow-x: auto;
+}
+.prose-log th,
+.prose-log td {
+  border: 1px solid var(--rule);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+.prose-log th {
+  background: var(--secondary);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.prose-log hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+}
+
+/* The "coach is writing" caret ----------------------------------- */
+@keyframes coach-caret {
+  0%, 45% { opacity: 1; }
+  55%, 100% { opacity: 0; }
+}
+.coach-caret::after {
+  content: "▍";
+  margin-left: 0.15em;
+  animation: coach-caret 1.05s step-end infinite;
+  color: var(--primary);
+}
+
+@keyframes entry-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.entry-in {
+  animation: entry-in 0.32s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry-in { animation: none; }
+  .coach-caret::after { animation: none; opacity: 1; }
+  * { scroll-behavior: auto !important; }
+}
