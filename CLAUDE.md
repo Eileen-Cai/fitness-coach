@@ -50,7 +50,8 @@ components/
   progress-rail.tsx     desktop right rail + shared <ProgressPanel/>
   progress-sheet.tsx    mobile: slim stat bar under the header + bottom sheet
   level-ring.tsx        the 270° tick-marked gauge (the one accent moment)
-  markdown.tsx          react-markdown + remark-gfm, rendered inside .prose-log
+  markdown.tsx          react-markdown (gfm + raw/sanitize), rendered inside .prose-log
+                        — the coach replies in plain prose now, this just renders paragraphs safely
   theme-provider.tsx    next-themes, follows system light/dark
 hooks/
   use-progress.ts       localStorage-backed progression (key: fitness-coach.progress.v1)
@@ -120,6 +121,14 @@ OpenRouter Chat Model ──(ai_languageModel)──▶ Fitness Coach   [model: 
 Simple Memory         ──(ai_memory)─────────▶ Fitness Coach   [buffer window, 20 turns]
 ```
 
+**Plain-prose replies.** The system prompt's top "How to respond" block tells the agent to
+write in natural conversational paragraphs — no Markdown, headings, lists, tables, or emoji.
+The free model doesn't fully comply, so **`Respond success`** post-processes `$json.output`
+with an inline IIFE: strips `**`, `#` headings, `-`/`1.` list markers, table pipes, backticks,
+and trailing-space hard breaks, then collapses blank lines. Output is always plain prose;
+the front-end's `.prose-log` renders it as serif paragraphs. A capable paid model would make
+the strip a no-op.
+
 The agent's `text` (prompt) is an expression that prefixes a one-line member-context block
 (`level {{ ($json.body.stats||{}).level||0 }}, …`) before `{{ $json.body.message }}`, so
 the coach sees the viewer's progression without a new node. Absent `stats` → all zeros.
@@ -179,6 +188,8 @@ Shipped. `n8n_validate_workflow` → 0 errors; workflow active. Verified live:
 - `200` happy path returns `{ reply, sessionId }`; `400` / `500` paths correct.
 - Memory works — a second turn on the same `sessionId` recalls facts from the first.
 - `stats` in the body → coach references the streak; **no** `stats` → still `200` (backward compatible).
+- Replies come back as plain prose — verified no `**`, `#`, `|`, `- `, `1.`, or backticks in the
+  output for plan requests and follow-ups (prompt + `Respond success` strip).
 - Front-end: `npm run test` (19) + `npm run build` pass. In-browser against local n8n — sending
   a message increments rail XP, crossing a threshold ticks the level and drops the inline marker,
   `first-plan` milestone unlocks off a structured reply. Light/dark + mobile bottom sheet checked.
