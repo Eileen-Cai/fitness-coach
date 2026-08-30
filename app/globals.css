@@ -5,147 +5,125 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ------------------------------------------------------------------ *
- *  Fitness Coach — "the training log"
- *  A coaching notebook: warm paper, ink, hairline rules, a forest
- *  accent pen-mark down every coach entry, a mono margin index.
+ *  Fitness Coach — quiet product UI
+ *  Near-monochrome, hairline structure, one green accent that only
+ *  appears on the progress instrument, the streak, and Send.
+ *  The coach's replies are the single serif voice on the page.
  * ------------------------------------------------------------------ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  /* bridge for @layer base + any stray shadcn class */
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+  --color-border: var(--line);
+  --color-input: var(--line);
+  --color-ring: var(--brand);
+  --color-muted: var(--panel);
+  --color-muted-foreground: var(--ink-muted);
+  --color-primary: var(--brand);
+  --color-primary-foreground: var(--on-brand);
+  --color-destructive: var(--danger);
 
-  --color-paper: var(--paper);
+  /* product tokens */
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-panel: var(--panel);
   --color-ink: var(--ink);
-  --color-ink-soft: var(--ink-soft);
-  --color-rule: var(--rule);
-  --color-wash: var(--wash);
-  --color-flag: var(--flag);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--brand);
+  --color-accent-weak: var(--brand-weak);
+  --color-danger: var(--danger);
+  --color-on-brand: var(--on-brand);
 
-  --font-sans: var(--font-hanken), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", monospace;
   --font-serif: var(--font-newsreader), ui-serif, Georgia, serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", monospace;
 
-  --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
-  --radius-xl: 10px;
+  --radius: 6px;
 }
 
 :root {
-  --paper: #fbfaf7;
-  --ink: #1b1a17;
-  --ink-soft: #5b564c;
-  --rule: #e6e1d5;
-  --wash: #edf1e9;
-  --flag: #a23b2e;
-
-  --background: var(--paper);
-  --foreground: var(--ink);
-  --card: #ffffff;
-  --card-foreground: var(--ink);
-  --popover: #ffffff;
-  --popover-foreground: var(--ink);
-  --primary: #2f5233;
-  --primary-foreground: #f7f5ef;
-  --secondary: #f1efe8;
-  --secondary-foreground: var(--ink);
-  --muted: #f1efe8;
-  --muted-foreground: var(--ink-soft);
-  --accent: var(--wash);
-  --accent-foreground: #223b25;
-  --destructive: var(--flag);
-  --destructive-foreground: #f7f5ef;
-  --border: var(--rule);
-  --input: var(--rule);
-  --ring: #2f5233;
-
-  --radius: 4px;
+  --canvas: #fcfcfb;
+  --surface: #ffffff;
+  --panel: #f6f6f4;
+  --ink: #18191b;
+  --ink-muted: #6c7075;
+  --ink-faint: #9da1a6;
+  --line: #e7e7e3;
+  --line-strong: #d6d6d1;
+  --brand: #1f6f4c;
+  --brand-weak: #e8f1ec;
+  --danger: #a83a30;
+  --on-brand: #f7faf8;
 }
 
 .dark {
-  --paper: #17150f;
-  --ink: #ece7da;
-  --ink-soft: #9c9686;
-  --rule: #2e2a20;
-  --wash: #20241c;
-  --flag: #d9968a;
-
-  --background: var(--paper);
-  --foreground: var(--ink);
-  --card: #1f1c15;
-  --card-foreground: var(--ink);
-  --popover: #1f1c15;
-  --popover-foreground: var(--ink);
-  --primary: #8fb191;
-  --primary-foreground: #14170f;
-  --secondary: #23201a;
-  --secondary-foreground: var(--ink);
-  --muted: #23201a;
-  --muted-foreground: var(--ink-soft);
-  --accent: var(--wash);
-  --accent-foreground: #cdd8c9;
-  --destructive: var(--flag);
-  --destructive-foreground: #17150f;
-  --border: var(--rule);
-  --input: #35301f;
-  --ring: #8fb191;
+  --canvas: #0e0f10;
+  --surface: #16171a;
+  --panel: #131418;
+  --ink: #eaebec;
+  --ink-muted: #999da3;
+  --ink-faint: #6d7177;
+  --line: #24262a;
+  --line-strong: #32353a;
+  --brand: #46b988;
+  --brand-weak: #142420;
+  --danger: #df867c;
+  --on-brand: #0b120e;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-line;
   }
   html {
     font-family: var(--font-sans);
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-background text-foreground;
+    background: var(--canvas);
+    color: var(--ink);
     font-feature-settings: "kern", "liga";
-    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: color-mix(in srgb, var(--primary) 22%, transparent);
+    background: color-mix(in srgb, var(--brand) 22%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  /* tabular figures for every mono run — stats must align */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
 }
 
-/* Coach reply prose — rendered markdown, kept on-brand ------------- */
+/* Coach reply prose — the one serif voice ------------------------- */
 .prose-log {
   font-family: var(--font-serif);
-  font-size: 1.045rem;
-  line-height: 1.62;
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--ink);
 }
 .prose-log > * + * {
-  margin-top: 0.85em;
+  margin-top: 0.8em;
 }
 .prose-log h1,
 .prose-log h2,
 .prose-log h3 {
-  font-family: var(--font-sans);
-  font-weight: 600;
-  font-size: 0.82rem;
-  letter-spacing: 0.08em;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-top: 1.5em;
+  color: var(--ink-faint);
+  margin-top: 1.6em;
 }
 .prose-log strong {
   font-weight: 600;
@@ -154,15 +132,15 @@
   font-style: italic;
 }
 .prose-log a {
-  color: var(--primary);
+  color: var(--brand);
   text-underline-offset: 2px;
 }
 .prose-log ul,
 .prose-log ol {
-  padding-left: 1.15rem;
+  padding-left: 1.1rem;
 }
 .prose-log li {
-  margin-top: 0.3em;
+  margin-top: 0.28em;
 }
 .prose-log ul > li {
   list-style: none;
@@ -171,32 +149,32 @@
 .prose-log ul > li::before {
   content: "–";
   position: absolute;
-  left: -1.1rem;
-  color: var(--primary);
+  left: -1.05rem;
+  color: var(--ink-faint);
 }
 .prose-log ol {
   list-style: decimal;
 }
 .prose-log ol > li::marker {
   font-family: var(--font-mono);
-  font-size: 0.85em;
-  color: var(--ink-soft);
+  font-size: 0.82em;
+  color: var(--ink-faint);
 }
 .prose-log code {
   font-family: var(--font-mono);
-  font-size: 0.86em;
-  background: var(--secondary);
-  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+  background: var(--panel);
+  padding: 0.08em 0.34em;
   border-radius: 3px;
 }
 .prose-log pre {
   font-family: var(--font-mono);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   line-height: 1.5;
-  background: var(--secondary);
-  border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 0.9rem 1rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
   overflow-x: auto;
 }
 .prose-log pre code {
@@ -204,58 +182,96 @@
   padding: 0;
 }
 .prose-log blockquote {
-  border-left: 2px solid var(--primary);
+  border-left: 2px solid var(--line-strong);
   padding-left: 0.9rem;
-  color: var(--ink-soft);
+  color: var(--ink-muted);
   font-style: italic;
 }
 .prose-log table {
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-sans);
-  font-size: 0.86rem;
+  font-size: 0.82rem;
   display: block;
   overflow-x: auto;
 }
 .prose-log th,
 .prose-log td {
-  border: 1px solid var(--rule);
+  border: 1px solid var(--line);
   padding: 0.4rem 0.6rem;
   text-align: left;
   vertical-align: top;
 }
 .prose-log th {
-  background: var(--secondary);
+  background: var(--panel);
   font-weight: 600;
-  letter-spacing: 0.01em;
 }
 .prose-log hr {
   border: 0;
-  border-top: 1px solid var(--rule);
+  border-top: 1px solid var(--line);
 }
 
-/* The "coach is writing" caret ----------------------------------- */
+/* Motion — three cues, all reduced-motion aware ----------------- */
+@keyframes entry-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.entry-in {
+  animation: entry-in 0.24s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
 @keyframes coach-caret {
-  0%, 45% { opacity: 1; }
-  55%, 100% { opacity: 0; }
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
 }
 .coach-caret::after {
   content: "▍";
-  margin-left: 0.15em;
+  margin-left: 0.12em;
+  color: var(--brand);
   animation: coach-caret 1.05s step-end infinite;
-  color: var(--primary);
 }
 
-@keyframes entry-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: none; }
+@keyframes milestone-flash {
+  from {
+    background: var(--brand-weak);
+  }
+  to {
+    background: transparent;
+  }
 }
-.entry-in {
-  animation: entry-in 0.32s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+.milestone-flash {
+  animation: milestone-flash 0.9s ease-out both;
+}
+
+.ring-fill {
+  transition: stroke-dashoffset 0.3s ease-out;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .entry-in { animation: none; }
-  .coach-caret::after { animation: none; opacity: 1; }
-  * { scroll-behavior: auto !important; }
+  .entry-in,
+  .milestone-flash {
+    animation: none;
+  }
+  .coach-caret::after {
+    animation: none;
+    opacity: 1;
+  }
+  .ring-fill {
+    transition: none;
+  }
+  * {
+    scroll-behavior: auto !important;
+  }
 }

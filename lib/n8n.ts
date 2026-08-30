@@ -6,7 +6,8 @@ import "server-only";
  *
  * Data contract (see apps/fitness-coach/CLAUDE.md):
  *   POST {N8N_WEBHOOK_BASE_URL}/webhook/{N8N_WEBHOOK_PATH}
- *   body    -> { message: string (1..4000), sessionId: string }
+ *   body    -> { message: string (1..4000), sessionId: string,
+ *                stats?: { level: number, streak: number, messages: number } }
  *   200     -> { reply: string, sessionId: string }
  *   400/500 -> { error: string, message: string }
  */
@@ -18,7 +19,13 @@ const TIMEOUT_MS = 120_000;
 
 export const MESSAGE_MAX = 4000;
 
-export type CoachRequest = { message: string; sessionId: string };
+export type CoachStats = { level: number; streak: number; messages: number };
+
+export type CoachRequest = {
+  message: string;
+  sessionId: string;
+  stats?: CoachStats;
+};
 
 export type CoachResult =
   | { ok: true; reply: string; sessionId: string }
@@ -31,6 +38,7 @@ function fail(status: number, error: string, message: string): CoachResult {
 export async function askCoach({
   message,
   sessionId,
+  stats,
 }: CoachRequest): Promise<CoachResult> {
   if (!BASE_URL) {
     return fail(
@@ -54,7 +62,7 @@ export async function askCoach({
         "ngrok-skip-browser-warning": "1",
         ...(AUTH_HEADER ? { authorization: AUTH_HEADER } : {}),
       },
-      body: JSON.stringify({ message, sessionId }),
+      body: JSON.stringify(stats ? { message, sessionId, stats } : { message, sessionId }),
       signal: controller.signal,
       cache: "no-store",
     });

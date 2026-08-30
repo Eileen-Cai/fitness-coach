@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { askCoach, MESSAGE_MAX } from "@/lib/n8n";
+import { askCoach, MESSAGE_MAX, type CoachStats } from "@/lib/n8n";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -11,6 +11,22 @@ function bad(message: string) {
   );
 }
 
+/** Trust nothing from the client — coerce to a sane, non-negative integer. */
+function toCount(v: unknown): number {
+  const n = Math.floor(Number(v));
+  return Number.isFinite(n) && n > 0 ? Math.min(n, 1_000_000) : 0;
+}
+
+function readStats(raw: unknown): CoachStats | undefined {
+  if (!raw || typeof raw !== "object") return undefined;
+  const r = raw as Record<string, unknown>;
+  return {
+    level: toCount(r.level) || 1,
+    streak: toCount(r.streak),
+    messages: toCount(r.messages),
+  };
+}
+
 export async function POST(req: Request) {
   let payload: unknown;
   try {
@@ -19,9 +35,10 @@ export async function POST(req: Request) {
     return bad("Send a JSON body with a message.");
   }
 
-  const { message, sessionId } = (payload ?? {}) as {
+  const { message, sessionId, stats } = (payload ?? {}) as {
     message?: unknown;
     sessionId?: unknown;
+    stats?: unknown;
   };
 
   if (typeof message !== "string" || message.trim().length === 0) {
@@ -34,7 +51,11 @@ export async function POST(req: Request) {
     return bad("Missing session. Reload the page and try again.");
   }
 
-  const result = await askCoach({ message: message.trim(), sessionId });
+  const result = await askCoach({
+    message: message.trim(),
+    sessionId,
+    stats: readStats(stats),
+  });
 
   if (result.ok) {
     return NextResponse.json(

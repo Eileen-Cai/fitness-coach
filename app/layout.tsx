@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Newsreader, Hanken_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
+import { Newsreader } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
+// One serif, one job: the coach's spoken replies.
 const newsreader = Newsreader({
   subsets: ["latin"],
   weight: ["400", "500"],
@@ -11,24 +14,10 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-const hanken = Hanken_Grotesk({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-hanken",
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-plex-mono",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
-  title: "Fitness Coach — training log",
+  title: "Fitness Coach",
   description:
-    "An evidence-based coaching conversation for lifting, yoga, mobility, and balanced nutrition.",
+    "An evidence-based coaching conversation for lifting, yoga, mobility, and balanced nutrition — with a running record of your progress.",
 };
 
 export default function RootLayout({
@@ -37,7 +26,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${hanken.variable} ${plexMono.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${newsreader.variable}`}
       suppressHydrationWarning
     >
       <body className="min-h-dvh antialiased">

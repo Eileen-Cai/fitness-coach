@@ -1,7 +1,9 @@
 # fitness-coach
 
-An evidence-based fitness coaching chat, backed by an n8n AI Agent workflow.
-Next.js (App Router) + TypeScript + Tailwind v4 + shadcn/ui.
+An evidence-based fitness coaching chat, backed by an n8n AI Agent workflow, with a
+localStorage progression panel (XP / level / daily streak / milestones) to pull people back.
+Next.js 16 (App Router) · TypeScript · Tailwind v4 · Geist + Newsreader · next-themes ·
+react-markdown · Vitest.
 
 ## Deployment (Phase 3)
 
@@ -35,26 +37,44 @@ re-run the workflow checklist against it.
 enable it: Vercel dashboard → project → Settings → Git → connect `Eileen-Cai/fitness-coach`
 (completes the GitHub App install). After that, pushes to `main` deploy automatically.
 
-## Front-end (Phase 2)
+## Front-end
 
 ```
 app/
-  layout.tsx            fonts (Newsreader / Hanken Grotesk / IBM Plex Mono), ThemeProvider
+  layout.tsx            fonts (Geist Sans / Geist Mono for UI+data, Newsreader for coach voice), ThemeProvider
   page.tsx              server shell → <CoachChat/>
-  globals.css           design tokens ("the training log"), .prose-log, motion
-  api/coach/route.ts    POST proxy: validates body, calls lib/n8n, maps errors → status
+  globals.css           "quiet product UI" design tokens, .prose-log, 3 motion cues
+  api/coach/route.ts    POST proxy: validates body, clamps optional stats, calls lib/n8n
 components/
-  coach-chat.tsx        the whole client UI (transcript, composer, localStorage session)
+  coach-chat.tsx        the full client shell — header, transcript, composer, toasts, rail/sheet
+  progress-rail.tsx     desktop right rail + shared <ProgressPanel/>
+  progress-sheet.tsx    mobile: slim stat bar under the header + bottom sheet
+  level-ring.tsx        the 270° tick-marked gauge (the one accent moment)
   markdown.tsx          react-markdown + remark-gfm, rendered inside .prose-log
   theme-provider.tsx    next-themes, follows system light/dark
+hooks/
+  use-progress.ts       localStorage-backed progression (key: fitness-coach.progress.v1)
 lib/
-  n8n.ts                server-only bridge to the n8n webhook (timeout, error shaping)
+  n8n.ts                server-only bridge to the n8n webhook (timeout, error shaping, stats passthrough)
+  progress.ts           pure XP/level/streak/achievement engine
+  progress.test.ts      19 unit tests — `npm run test`
 ```
 
-**Design.** A coaching *training log*, not a chat-bubble UI: mono margin index (`01`, `02`)
-because each turn genuinely builds on the last (server-side memory); the athlete's own lines
-in mono; the coach's replies in a serif voice inside a forest-green ruled panel. Warm paper,
-hairline rules. Light/dark follow the OS.
+**Design — "quiet product UI".** Near-monochrome, hairline structure, generous whitespace.
+A single green accent appears only on the progress gauge, the streak, Send, and milestone
+ticks. Geist for UI and all numerals (tabular); Newsreader is the one serif, reserved for
+the coach's spoken replies. No chat bubbles — turns are label-led (`You` / `Coach`).
+Light/dark follow the OS. Deliberately avoids the AI-generated look: no gradients,
+glassmorphism, purple/blue, emoji-as-UI, bento grids, or shadow soup.
+
+**Gamification (all client-side, `localStorage`).** XP is earned only on a *successful*
+coach reply — `+12`, `+18` for the first reply of a local day. Escalating level curve
+(`xpThreshold`: 0 / 60 / 160 / 300 / 480 …). A daily streak counts consecutive local days.
+Seven one-time milestones detected from the transcript. On level-up: the gauge ticks and an
+inline `— Level N · X questions in` line drops into the log; on a milestone: one 3s toast +
+a rail-row flash. The front-end also sends `{ level, streak, messages }` to the workflow so
+the coach can acknowledge milestones — see the data contract. Nothing is locked. Progress is
+per-device; clearing site data resets it.
 
 **Run it locally**
 
@@ -74,9 +94,7 @@ npm run dev                         # http://localhost:3000  (n8n workflow must 
 | `N8N_WEBHOOK_TOKEN` | no | Sent as `Authorization` if the webhook ever gets auth. |
 
 The browser only ever calls `/api/coach` (same origin). The n8n URL stays server-side.
-
-**Verified:** `npm run build` passes; example prompt → coach reply renders; a follow-up on
-the same session recalls earlier facts — all in-browser against local n8n.
+`npm run test` runs the progression unit tests.
 
 ## Workflow (Phase 1)
 
@@ -102,6 +120,10 @@ OpenRouter Chat Model ──(ai_languageModel)──▶ Fitness Coach   [model: 
 Simple Memory         ──(ai_memory)─────────▶ Fitness Coach   [buffer window, 20 turns]
 ```
 
+The agent's `text` (prompt) is an expression that prefixes a one-line member-context block
+(`level {{ ($json.body.stats||{}).level||0 }}, …`) before `{{ $json.body.message }}`, so
+the coach sees the viewer's progression without a new node. Absent `stats` → all zeros.
+
 ## Data contract
 
 ### Request — `POST /webhook/fitness-coach`
@@ -112,6 +134,7 @@ Simple Memory         ──(ai_memory)─────────▶ Fitness Co
 |-------------|--------|----------|----------------------------------------------------------------------|
 | `message`   | string | yes      | The user's message. 1–4000 characters.                              |
 | `sessionId` | string | yes      | Stable per-conversation ID. Front-end generates a UUID once and persists it (localStorage). Drives server-side memory. |
+| `stats`     | object | no       | `{ level, streak, messages }` — the viewer's progression. The agent prompt is prefixed with a one-line "member context" so it can nod to milestones. Missing/garbage → treated as zeros; the request never fails on `stats`. |
 
 ### Response `200`
 
@@ -151,12 +174,14 @@ curl -sS -i -X POST http://localhost:5678/webhook/fitness-coach \
 
 ## Status
 
-Phase 1 **complete**. `n8n_validate_workflow` → 0 errors; workflow active. Verified live:
+Shipped. `n8n_validate_workflow` → 0 errors; workflow active. Verified live:
 
-- `200` happy path returns `{ reply, sessionId }`.
+- `200` happy path returns `{ reply, sessionId }`; `400` / `500` paths correct.
 - Memory works — a second turn on the same `sessionId` recalls facts from the first.
-- `400` on missing/invalid `message` or `sessionId`.
-- `500` when the model call fails (verified against OpenRouter 402/404/429 while picking a model).
+- `stats` in the body → coach references the streak; **no** `stats` → still `200` (backward compatible).
+- Front-end: `npm run test` (19) + `npm run build` pass. In-browser against local n8n — sending
+  a message increments rail XP, crossing a threshold ticks the level and drops the inline marker,
+  `first-plan` milestone unlocks off a structured reply. Light/dark + mobile bottom sheet checked.
 
 ### Model note
 
