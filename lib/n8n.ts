@@ -50,6 +50,8 @@ export async function askCoach({
       method: "POST",
       headers: {
         "content-type": "application/json",
+        // Skip ngrok's free-tier browser interstitial when n8n sits behind a tunnel.
+        "ngrok-skip-browser-warning": "1",
         ...(AUTH_HEADER ? { authorization: AUTH_HEADER } : {}),
       },
       body: JSON.stringify({ message, sessionId }),
