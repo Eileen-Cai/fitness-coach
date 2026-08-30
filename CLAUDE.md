@@ -32,10 +32,11 @@ re-run the workflow checklist against it.
 
 ### Redeploy
 
-`vercel --prod` from this folder. **Auto-deploy on `git push` is not wired up yet** —
-`vercel git connect` failed because the Vercel GitHub App isn't authorized on the repo. To
-enable it: Vercel dashboard → project → Settings → Git → connect `Eileen-Cai/fitness-coach`
-(completes the GitHub App install). After that, pushes to `main` deploy automatically.
+**Auto-deploy is on.** The Vercel project is linked to `Eileen-Cai/fitness-coach`
+(`productionBranch: main`), so every push to `main` builds and promotes to production —
+front-end changes need nothing else. `vercel --prod` from this folder still works for an
+out-of-band deploy. Workflow/data-contract changes are separate: edit n8n, re-validate,
+re-run the round-trip; only push here if the app code or `.env.example` changed too.
 
 ## Front-end
 
@@ -211,6 +212,5 @@ Redis) before real multi-user use.
 
 ## Follow-ups
 
-- Wire `vercel git connect` (dashboard) so `git push` auto-deploys — see Deployment above.
 - Reserve an ngrok static domain (or move n8n off the laptop) so the public URL is stable.
 - Fund OpenRouter and switch the model to `anthropic/claude-sonnet-5` (see Model note).
