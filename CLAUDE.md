@@ -3,6 +3,38 @@
 An evidence-based fitness coaching chat, backed by an n8n AI Agent workflow.
 Next.js (App Router) + TypeScript + Tailwind v4 + shadcn/ui.
 
+## Deployment (Phase 3)
+
+- **Live:** https://fitness-coach-eileen10.vercel.app
+- **Vercel project:** `fitness-coach` (team `eileen10`, `prj_EWIF54X1fXPbNQRr6TzWTgSOxQDj`)
+- **GitHub:** https://github.com/Eileen-Cai/fitness-coach (private, `main`)
+- **Vercel env** (Production + Preview): `N8N_WEBHOOK_BASE_URL`, `N8N_WEBHOOK_PATH`
+- **Deployment Protection:** Vercel Authentication is set to **preview-only** — production is
+  public, preview URLs require Vercel login.
+
+### n8n is reached through an ngrok tunnel
+
+Production `N8N_WEBHOOK_BASE_URL` points at an **ngrok** tunnel in front of local Docker n8n:
+`https://footsore-spider-thermal.ngrok-free.dev`. This URL is **ephemeral** — it changes
+whenever the `ngrok http 5678` process restarts or the Mac sleeps. When it changes:
+
+```bash
+cd apps/fitness-coach
+printf '%s' "<new-ngrok-url>" | vercel env add N8N_WEBHOOK_BASE_URL production --force
+printf '%s' "<new-ngrok-url>" | vercel env add N8N_WEBHOOK_BASE_URL preview    --force
+vercel --prod
+```
+
+For a lasting setup: reserve an ngrok static domain, or move n8n to an always-on host and
+re-run the workflow checklist against it.
+
+### Redeploy
+
+`vercel --prod` from this folder. **Auto-deploy on `git push` is not wired up yet** —
+`vercel git connect` failed because the Vercel GitHub App isn't authorized on the repo. To
+enable it: Vercel dashboard → project → Settings → Git → connect `Eileen-Cai/fitness-coach`
+(completes the GitHub App install). After that, pushes to `main` deploy automatically.
+
 ## Front-end (Phase 2)
 
 ```
@@ -141,9 +173,8 @@ out `429`s. To upgrade: add credit to OpenRouter and set `OpenRouter Chat Model 
 instances. Fine for the demo; swap for `@n8n/n8n-nodes-langchain.memoryPostgresChat` (or
 Redis) before real multi-user use.
 
-## Next (Phase 3 — ship)
+## Follow-ups
 
-Give n8n a public URL (ngrok static domain / Cloudflare Tunnel in front of local Docker, or
-move n8n to an always-on host), `git init` here, push to a GitHub repo, import to Vercel, set
-`N8N_WEBHOOK_BASE_URL` to the public URL in Vercel env, deploy. See the workbench `CLAUDE.md`
-and `docs/deploy-runbook.md`.
+- Wire `vercel git connect` (dashboard) so `git push` auto-deploys — see Deployment above.
+- Reserve an ngrok static domain (or move n8n off the laptop) so the public URL is stable.
+- Fund OpenRouter and switch the model to `anthropic/claude-sonnet-5` (see Model note).
